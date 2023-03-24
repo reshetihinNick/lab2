@@ -1,3 +1,5 @@
+package org.Find;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -25,17 +27,15 @@ public class Find {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("java -jar Find.jar [-r] [-d directory] filename.txt");
+            System.err.println("java -jar org.Find.Find.jar [-r] [-d directory] filename.txt");
             parser.printUsage(System.err);
             return;
         }
-
         File fileSearchDir = new File(searchDir);
         if (!fileSearchDir.exists()) {
             System.err.println("Directory " + searchDir + " does not exist.");
             return;
         }
-
         findFile(fileSearchDir, fileName, subDirSearch);
     }
 
@@ -59,20 +59,22 @@ public class Find {
         return false;
     }
 
-    private void findFile(File searchDir, String searchFileName, boolean subDirSearch) {
+    public void findFile(File searchDir, String searchFileName, boolean subDirSearch) {
         File[] files = searchDir.listFiles();
         if (files != null) {
             for (File file : files) {
                 String filename = file.getName();
                 if (file.isDirectory() && subDirSearch) {
                     findFile(file, searchFileName, true);
-                } else if (file.isFile() &&
-                        (filename.equals(searchFileName) ||
-                         anyFileExtension(filename, searchFileName)) ||
-                         anyFileInDirectory(searchFileName) ||
-                         anyFileWithCurrentExtension(filename, searchFileName))
-                         {
-                    System.out.println(file.getAbsolutePath());
+                }
+                else {
+                    if (file.isFile()                              &&
+                        (filename.equals(searchFileName)           ||
+                        anyFileExtension(filename, searchFileName) ||
+                        anyFileInDirectory(searchFileName)         ||
+                        anyFileWithCurrentExtension(filename, searchFileName))) {
+                            System.out.println(file.getAbsolutePath());
+                    }
                 }
             }
         }
